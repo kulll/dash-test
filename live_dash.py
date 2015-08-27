@@ -14,23 +14,21 @@ class DownloadDash(TaskSet):
 
     @task(7)
     def videos_segment(self):
-        bitrate = choice(self.parent.bitrate)
-        counter = 1
         path = "/livesim/tfdt_32/testpic_2s/V300/"
         while True:
-            segment = "{}.m4s".format(counter)
+            segment = "{}.m4s".format(self.parent.counter)
             self.client.get(path + segment).raise_for_status()
             counter += 1
 
     @task (7)
     def audio_segment(self):
-        counter = 1
         path = "/livesim/tfdt_32/testpic_2s/A48/"
         while True:
-            segment = "{}.m4s".format(counter)
+            segment = "{}.m4s".format(self.parent.counter)
             self.client.get(path + segment).raise_for_status()
             counter += 1
 
 class DashUser(HttpLocust):
     task_set = DownloadDash
+    counter = 1
 
