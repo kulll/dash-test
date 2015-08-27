@@ -15,16 +15,18 @@ class DownloadDash(TaskSet):
     @task(7)
     def videos_segment(self):
         path = "/livesim/tfdt_32/testpic_2s/V300/"
+        counter = self.parent.counter
         while True:
-            segment = "{}.m4s".format(self.parent.counter)
+            segment = "{}.m4s".format(counter)
             self.client.get(path + segment).raise_for_status()
             counter += 1
 
     @task (7)
     def audio_segment(self):
         path = "/livesim/tfdt_32/testpic_2s/A48/"
+        counter = self.parent.counter
         while True:
-            segment = "{}.m4s".format(self.parent.counter)
+            segment = "{}.m4s".format(counter)
             self.client.get(path + segment).raise_for_status()
             counter += 1
 
