@@ -10,7 +10,7 @@ class DownloadDash(TaskSet):
     def init(self):
         init_type = ["A48", "V300"]
         path = "/livesim/tfdt_32/testpic_2s/{}/init.mp4".format(init_type)
-        self.client.get(link)
+        self.client.get(path)
 
     @task(7)
     def videos_segment(self):
