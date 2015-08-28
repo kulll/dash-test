@@ -6,12 +6,14 @@ from dateutil import tz
 from datetime import datetime
 
 class DownloadDash(TaskSet):
+    def on_start(self):
+        self._get_mpd()
+
     def _get_mpd(self):
          data = self.client.get("/livesim/tfdt_32/testpic_2s/Manifest.mpd")
          self.mpd = data.text
 
     def _get_segment(self):
-        self._get_mpd()
         mpd = BeautifulSoup(self.mpd, "lxml").mpd
         end = parse(mpd['availabilityendtime'])
         start = parse(mpd['availabilitystarttime'])
