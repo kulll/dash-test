@@ -22,7 +22,7 @@ class DownloadDash(TaskSet):
         now = datetime.now(tz.tzutc())
         remaining = end - now
         current_time = total_seconds - remaining.seconds
-        return (current_time / duration) - 10
+        return (current_time / duration) - 2
 
     @task(3)
     def init(self):
