@@ -23,21 +23,21 @@ class DownloadDash(TaskSet):
     def videos_segment(self):
         seg = self.segment
         bit = self.bit
-        init = "/dash/{}/bitcodin-init.m4v".format(bit)
+        init = "/dash/{}k/bitcodin-init.m4v".format(bit)
         self.client.get(init).raise_for_status()
         while True:
-            path = "/dash/{}/bitcodin-{}.m4v".format(bit, seg)
+            path = "/dash/{}k/bitcodin-{}.m4v".format(bit, seg)
             self.client.get(path).raise_for_status()
             seg += 1
 
     @task
     def audio_segment(self):
         seg = self.segment
-        bit = "250k"
-        init = "/dash/{}/bitcodin-init.m4a".format(bit)
+        bit = "250"
+        init = "/dash/{}k/bitcodin-init.m4a".format(bit)
         self.client.get(init).raise_for_status()
         while True:
-            path = "/dash/{}/bitcodin-{}.m4a".format(bit, seg)
+            path = "/dash/{}k/bitcodin-{}.m4a".format(bit, seg)
             self.client.get(path).raise_for_status()
             seg += 1
 
