@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from dateutil.parser import parse
 from dateutil import tz
 from datetime import datetime
+from time import sleep
 
 class DownloadDash(TaskSet):
     def on_start(self):
@@ -29,6 +30,7 @@ class DownloadDash(TaskSet):
             path = "/dash/{}k/bitcodin-{}.m4v".format(bit, seg)
             self.client.get(path).raise_for_status()
             seg += 1
+            sleep(2)
 
     @task
     def audio_segment(self):
@@ -40,6 +42,7 @@ class DownloadDash(TaskSet):
             path = "/dash/{}k/bitcodin-{}.m4a".format(bit, seg)
             self.client.get(path).raise_for_status()
             seg += 1
+            sleep(2)
 
 class DashUser(HttpLocust):
     task_set = DownloadDash
