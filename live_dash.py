@@ -16,7 +16,7 @@ class DownloadDash(TaskSet):
          return data.text
 
     def _get_segment(self):
-        mpd = BeautifulSoup(self.mpd, "xml").mpd
+        mpd = BeautifulSoup(self.mpd, "xml")
         return int(mpd.find(startNumber=True)["startNumber"])
 
     @task
