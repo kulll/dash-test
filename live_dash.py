@@ -7,44 +7,40 @@ from datetime import datetime
 
 class DownloadDash(TaskSet):
     def on_start(self):
-        self._get_mpd()
+        self.bit = choice(self.parent.bitrate)
+        self.segment = self._get_segment()
 
-    def _get_mpd(self):
-         data = self.client.get("/livesim/tfdt_32/testpic_2s/Manifest.mpd")
-         self.mpd = data.text
+    @property
+    def mpd(self):
+         data = self.client.get("/mpds/stream.php?streamkey=bitcodin")
+         return data.text
 
     def _get_segment(self):
-        mpd = BeautifulSoup(self.mpd, "lxml").mpd
-        end = parse(mpd['availabilityendtime'])
-        start = parse(mpd['availabilitystarttime'])
-        duration = int(mpd.period.adaptationset.segmenttemplate['duration'])
-        total_seconds = (end - start).seconds
-        now = datetime.now(tz.tzutc())
-        remaining = end - now
-        current_time = total_seconds - remaining.seconds
-        return (current_time / duration) - 2
+        mpd = BeautifulSoup(self.mpd, "xml").mpd
+        return int(mpd.find(startNumber=True)["startNumber"])
 
-    @task(3)
-    def init(self):
-        init_type = ["A48", "V300"]
-        value = choice(init_type)
-        path = "/livesim/tfdt_32/testpic_2s/{}/init.mp4".format(value)
-        self.client.get(path)
-
-    @task(7)
+    @task
     def videos_segment(self):
-        segment = self._get_segment()
-        path = "/livesim/tfdt_32/testpic_2s/V300/"
-        segment_path = "{}.m4s".format(segment)
-        self.client.get(path + segment_path).raise_for_status()
+        seg = self.segment
+        bit = self.bit
+        init = "/dash/{}/bitcodin-init.m4v".format(bit)
+        self.client.get(init).raise_for_status()
+        while True:
+            path = "/dash/{}/bitcodin-{}.m4v".format(bit, seg)
+            self.client.get(path).raise_for_status()
+            seg += 1
 
-    @task (7)
+    @task
     def audio_segment(self):
-        segment = self._get_segment()
-        path = "/livesim/tfdt_32/testpic_2s/A48/"
-        segment_path = "{}.m4s".format(segment)
-        self.client.get(path + segment_path).raise_for_status()
+        seg = self.segment
+        bit = "250k"
+        init = "/dash/{}/bitcodin-init.m4a".format(bit)
+        self.client.get(init).raise_for_status()
+        while True:
+            path = "/dash/{}/bitcodin-{}.m4a".format(bit, seg)
+            self.client.get(path).raise_for_status()
+            seg += 1
 
 class DashUser(HttpLocust):
     task_set = DownloadDash
-
+    bitrate = [250, 500, 700, 1100, 1500, 3000]
